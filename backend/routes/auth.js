@@ -190,6 +190,29 @@ router.post('/login',
                 { expiresIn: process.env.JWT_EXPIRE || '7d' }
             );
 
+            // Send login notification email
+            try {
+                await sendEmailNotification({
+                    to: user.email,
+                    subject: 'Login Notification - CRM System',
+                    text: `Hello ${user.name}, you have successfully logged into the CRM System at ${new Date().toLocaleString()}.`,
+                    html: `
+                        <h2>Login Notification</h2>
+                        <p>Hello ${user.name},</p>
+                        <p>You have successfully logged into the CRM System.</p>
+                        <ul>
+                            <li><strong>Login Time:</strong> ${new Date().toLocaleString()}</li>
+                            <li><strong>Email:</strong> ${user.email}</li>
+                            <li><strong>Role:</strong> ${user.role}</li>
+                        </ul>
+                        <p>If you did not perform this login, please contact your administrator immediately.</p>
+                    `
+                });
+            } catch (emailError) {
+                console.error('Login email notification error:', emailError);
+                // Don't fail login if email fails
+            }
+
             res.json({
                 message: 'Login successful',
                 user: {

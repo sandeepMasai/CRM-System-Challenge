@@ -35,6 +35,13 @@ FRONTEND_URL=http://localhost:3000
 
 ## Setting up Email Notifications
 
+The CRM system sends email notifications for the following events:
+- **User Registration**: Welcome email when a new user registers
+- **User Login**: Login notification email when a user logs in
+- **Lead Assignment**: Email when a new lead is assigned to a user
+- **Lead Status Update**: Email when a lead status is changed
+- **Activity Creation**: Email notifications for important activities
+
 ### Gmail Setup
 1. Enable 2-Step Verification on your Google account
 2. Generate an App Password:
@@ -48,6 +55,8 @@ Update `EMAIL_HOST` and `EMAIL_PORT` according to your email provider:
 - **SendGrid**: `smtp.sendgrid.net:587`
 - **Outlook**: `smtp-mail.outlook.com:587`
 - **Yahoo**: `smtp.mail.yahoo.com:587`
+
+**Note**: If email credentials are not configured, the system will continue to work but email notifications will be skipped (logged to console).
 
 ## Database Setup
 
