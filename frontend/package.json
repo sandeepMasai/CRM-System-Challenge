@@ -1,0 +1,31 @@
+{
+    "name": "crm-frontend",
+    "version": "1.0.0",
+    "description": "CRM System Frontend",
+    "type": "module",
+    "private": true,
+    "dependencies": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.20.1",
+        "@reduxjs/toolkit": "^2.0.1",
+        "react-redux": "^9.0.4",
+        "axios": "^1.6.2",
+        "socket.io-client": "^4.6.1",
+        "recharts": "^2.10.3",
+        "react-toastify": "^9.1.3",
+        "date-fns": "^2.30.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.2.1",
+        "vite": "^5.0.8",
+        "autoprefixer": "^10.4.16",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.3.6"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    }
+}
