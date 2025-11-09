@@ -75,7 +75,7 @@ const sendEmailNotification = async ({ to, subject, text, html }) => {
         });
 
         const info = await Promise.race([sendPromise, timeoutPromise]);
-        
+
         if (process.env.NODE_ENV !== 'production') {
             console.log(`✅ Email sent successfully to ${to}: ${info.messageId}`);
         }
