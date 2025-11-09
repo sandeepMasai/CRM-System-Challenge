@@ -81,7 +81,7 @@ function Integrations() {
     if (!user || (user.role !== 'Admin' && user.role !== 'Manager')) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-500">Access denied. Admin or Manager role required.</p>
+                <p className="text-secondary">Access denied. Admin or Manager role required.</p>
             </div>
         )
     }
@@ -89,26 +89,26 @@ function Integrations() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-gray-900">Integrations</h1>
-                <p className="text-gray-500 mt-2">Connect your CRM with third-party tools</p>
+                <h1 className="text-3xl font-bold text-primary">Integrations</h1>
+                <p className="text-secondary mt-2">Connect your CRM with third-party tools</p>
             </div>
 
             {/* HubSpot Integration */}
-            <div className="bg-white shadow rounded-lg p-6">
+            <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
                             <span className="text-2xl">🔗</span>
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-900">HubSpot</h2>
-                            <p className="text-sm text-gray-500">Sync leads to HubSpot CRM</p>
+                            <h2 className="text-xl font-semibold text-primary">HubSpot</h2>
+                            <p className="text-sm text-secondary">Sync leads to HubSpot CRM</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
                         <span className={`px-3 py-1 text-sm font-medium rounded-full ${webhooks.hubspot.enabled
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-300 dark:border-green-700'
+                            : 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300 border border-gray-300 dark:border-slate-600'
                             }`}>
                             {webhooks.hubspot.enabled ? 'Enabled' : 'Disabled'}
                         </span>
@@ -117,7 +117,7 @@ function Integrations() {
 
                 <form onSubmit={handleHubSpotSubmit} className="space-y-4 mt-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-primary mb-2">
                             HubSpot API Key
                         </label>
                         <input
@@ -128,9 +128,9 @@ function Integrations() {
                                 hubspot: { ...webhooks.hubspot, apiKey: e.target.value }
                             })}
                             placeholder="Enter your HubSpot API key"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-primary rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-secondary mt-1">
                             Get your API key from HubSpot Settings → Integrations → Private Apps
                         </p>
                     </div>
@@ -143,9 +143,9 @@ function Integrations() {
                                     ...webhooks,
                                     hubspot: { ...webhooks.hubspot, enabled: e.target.checked }
                                 })}
-                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                className="rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
                             />
-                            <span className="ml-2 text-sm text-gray-700">Enable HubSpot sync</span>
+                            <span className="ml-2 text-sm text-primary">Enable HubSpot sync</span>
                         </label>
                         <div className="flex space-x-2">
                             <button
@@ -168,9 +168,9 @@ function Integrations() {
                     </div>
                 </form>
 
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                    <h3 className="text-sm font-semibold text-blue-900 mb-2">How it works:</h3>
-                    <ul className="text-sm text-blue-800 space-y-1">
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">How it works:</h3>
+                    <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
                         <li>• New leads are automatically synced to HubSpot as contacts</li>
                         <li>• Lead status and details are kept in sync</li>
                         <li>• Requires HubSpot Private App API key</li>
@@ -179,21 +179,21 @@ function Integrations() {
             </div>
 
             {/* Slack Integration */}
-            <div className="bg-white shadow rounded-lg p-6">
+            <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                             <span className="text-2xl">💬</span>
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-900">Slack</h2>
-                            <p className="text-sm text-gray-500">Send notifications to Slack channels</p>
+                            <h2 className="text-xl font-semibold text-primary">Slack</h2>
+                            <p className="text-sm text-secondary">Send notifications to Slack channels</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
                         <span className={`px-3 py-1 text-sm font-medium rounded-full ${webhooks.slack.enabled
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-300 dark:border-green-700'
+                            : 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300 border border-gray-300 dark:border-slate-600'
                             }`}>
                             {webhooks.slack.enabled ? 'Enabled' : 'Disabled'}
                         </span>
@@ -202,7 +202,7 @@ function Integrations() {
 
                 <form onSubmit={handleSlackSubmit} className="space-y-4 mt-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-primary mb-2">
                             Slack Webhook URL
                         </label>
                         <input
@@ -213,9 +213,9 @@ function Integrations() {
                                 slack: { ...webhooks.slack, webhookUrl: e.target.value }
                             })}
                             placeholder="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-primary rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-secondary mt-1">
                             Create a webhook in Slack: Apps → Incoming Webhooks → Add to Slack
                         </p>
                     </div>
@@ -228,9 +228,9 @@ function Integrations() {
                                     ...webhooks,
                                     slack: { ...webhooks.slack, enabled: e.target.checked }
                                 })}
-                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                className="rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
                             />
-                            <span className="ml-2 text-sm text-gray-700">Enable Slack notifications</span>
+                            <span className="ml-2 text-sm text-primary">Enable Slack notifications</span>
                         </label>
                         <div className="flex space-x-2">
                             <button
@@ -253,9 +253,9 @@ function Integrations() {
                     </div>
                 </form>
 
-                <div className="mt-4 p-4 bg-purple-50 rounded-lg">
-                    <h3 className="text-sm font-semibold text-purple-900 mb-2">Notifications sent:</h3>
-                    <ul className="text-sm text-purple-800 space-y-1">
+                <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                    <h3 className="text-sm font-semibold text-purple-900 dark:text-purple-300 mb-2">Notifications sent:</h3>
+                    <ul className="text-sm text-purple-800 dark:text-purple-300 space-y-1">
                         <li>• New lead created</li>
                         <li>• Lead assigned to user</li>
                         <li>• Important activities (Calls, Meetings, Status Changes)</li>
@@ -264,9 +264,9 @@ function Integrations() {
             </div>
 
             {/* Integration Info */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-yellow-900 mb-2">ℹ️ Integration Information</h3>
-                <ul className="text-sm text-yellow-800 space-y-1">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-yellow-900 dark:text-yellow-300 mb-2">ℹ️ Integration Information</h3>
+                <ul className="text-sm text-yellow-800 dark:text-yellow-300 space-y-1">
                     <li>• Integrations are automatically triggered when events occur</li>
                     <li>• Webhook configurations are stored in memory (restart resets them)</li>
                     <li>• For production, consider storing configurations in database</li>

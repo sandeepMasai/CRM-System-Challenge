@@ -167,11 +167,70 @@ docker-compose down
 
 ## 🧪 Testing
 
-Run backend tests:
+The project includes comprehensive test coverage using Jest and Supertest.
+
+### Running Tests
+
+Run all tests:
 ```bash
 cd backend
 npm test
 ```
+
+Run tests in watch mode:
+```bash
+npm run test:watch
+```
+
+Run tests with coverage report:
+```bash
+npm test -- --coverage
+```
+
+### Test Coverage
+
+The test suite includes:
+
+1. **Authentication Tests** (`auth.test.js`)
+   - User login with valid/invalid credentials
+   - User registration (public endpoint)
+   - Token validation
+   - Role-based access control
+   - Input validation
+
+2. **Leads API Tests** (`leads.test.js`)
+   - Lead CRUD operations
+   - Lead filtering and pagination
+   - Authorization checks
+   - Validation tests
+
+3. **User Model Tests** (`user.model.test.js`)
+   - User creation and validation
+   - Password hashing and comparison
+   - Role management
+   - Email uniqueness validation
+
+### Test Structure
+
+```
+backend/
+├── __tests__/
+│   ├── setup.js              # Test configuration
+│   ├── auth.test.js          # Authentication API tests
+│   ├── leads.test.js         # Leads API tests
+│   └── user.model.test.js   # User model tests
+└── jest.config.js            # Jest configuration
+```
+
+### Test Environment
+
+Tests run in a separate test environment with:
+- Isolated database operations
+- Automatic cleanup of test data
+- 10-second timeout for async operations
+- Mocked external services where appropriate
+
+**Current Coverage**: ~49% overall, with 100% coverage on models and 70%+ on core routes.
 
 ## 📚 API Documentation
 

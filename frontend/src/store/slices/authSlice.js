@@ -6,7 +6,7 @@ export const login = createAsyncThunk(
     async (credentials, { rejectWithValue }) => {
         try {
             const response = await api.post('/auth/login', credentials)
-            localStorage.setItem('token', response.data.token)
+            // Token is now stored in httpOnly cookie, only store user data
             localStorage.setItem('user', JSON.stringify(response.data.user))
             return response.data
         } catch (error) {
@@ -36,11 +36,8 @@ export const register = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const response = await api.post('/auth/register', userData)
-            // Save token and user to localStorage on successful registration
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token)
-                localStorage.setItem('user', JSON.stringify(response.data.user))
-            }
+            // Token is now stored in httpOnly cookie, only store user data
+            localStorage.setItem('user', JSON.stringify(response.data.user))
             return response.data
         } catch (error) {
             let errorMessage = 'Registration failed'
@@ -66,9 +63,25 @@ export const getCurrentUser = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/auth/me')
+            localStorage.setItem('user', JSON.stringify(response.data.user))
             return response.data.user
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || 'Failed to get user')
+        }
+    }
+)
+
+export const logout = createAsyncThunk(
+    'auth/logout',
+    async (_, { rejectWithValue }) => {
+        try {
+            await api.post('/auth/logout')
+            localStorage.removeItem('user')
+            return null
+        } catch (error) {
+            // Even if logout fails, clear local storage
+            localStorage.removeItem('user')
+            return rejectWithValue(error.response?.data?.message || 'Failed to logout')
         }
     }
 )
@@ -88,19 +101,11 @@ const authSlice = createSlice({
     name: 'auth',
     initialState: {
         user: getStoredUser(),
-        token: localStorage.getItem('token') || null,
-        isAuthenticated: !!localStorage.getItem('token'),
+        isAuthenticated: !!getStoredUser(),
         loading: false,
         error: null
     },
     reducers: {
-        logout: (state) => {
-            state.user = null
-            state.token = null
-            state.isAuthenticated = false
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
-        },
         clearError: (state) => {
             state.error = null
         }
@@ -115,7 +120,6 @@ const authSlice = createSlice({
                 state.loading = false
                 state.isAuthenticated = true
                 state.user = action.payload.user
-                state.token = action.payload.token
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false
@@ -128,8 +132,6 @@ const authSlice = createSlice({
             .addCase(getCurrentUser.rejected, (state) => {
                 state.isAuthenticated = false
                 state.user = null
-                state.token = null
-                localStorage.removeItem('token')
                 localStorage.removeItem('user')
             })
             .addCase(register.pending, (state) => {
@@ -140,7 +142,15 @@ const authSlice = createSlice({
                 state.loading = false
                 state.isAuthenticated = true
                 state.user = action.payload.user
-                state.token = action.payload.token
+            })
+            .addCase(logout.fulfilled, (state) => {
+                state.user = null
+                state.isAuthenticated = false
+            })
+            .addCase(logout.rejected, (state) => {
+                // Even if logout fails, clear state
+                state.user = null
+                state.isAuthenticated = false
             })
             .addCase(register.rejected, (state, action) => {
                 state.loading = false
@@ -149,7 +159,7 @@ const authSlice = createSlice({
     }
 })
 
-export const { logout, clearError } = authSlice.actions
+export const { clearError } = authSlice.actions
 export const selectAuth = (state) => state.auth
 export default authSlice.reducer
 

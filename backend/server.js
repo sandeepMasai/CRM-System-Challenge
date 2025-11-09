@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const http = require('http');
 const socketIo = require('socket.io');
 require('dotenv').config();
@@ -29,6 +30,7 @@ app.use(cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true
 }));
+app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -61,20 +63,23 @@ app.use((err, req, res, next) => {
 // Database connection and server start
 const PORT = process.env.PORT || 5000;
 
-sequelize.authenticate()
-    .then(() => {
-        console.log('Database connection established successfully.');
-        return sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
-    })
-    .then(() => {
-        server.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+    sequelize.authenticate()
+        .then(() => {
+            console.log('Database connection established successfully.');
+            return sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+        })
+        .then(() => {
+            server.listen(PORT, () => {
+                console.log(`Server is running on port ${PORT}`);
+            });
+        })
+        .catch(err => {
+            console.error('Unable to connect to the database:', err);
+            process.exit(1);
         });
-    })
-    .catch(err => {
-        console.error('Unable to connect to the database:', err);
-        process.exit(1);
-    });
+}
 
 module.exports = { app, server, io };
 

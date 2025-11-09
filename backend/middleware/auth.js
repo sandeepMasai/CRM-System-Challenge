@@ -3,8 +3,8 @@ const { User } = require('../models');
 
 const authenticateToken = async (req, res, next) => {
     try {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+        // Try to get token from httpOnly cookie first, then fallback to Authorization header
+        let token = req.cookies?.token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
 
         if (!token) {
             return res.status(401).json({ message: 'Access token required' });
@@ -15,8 +15,13 @@ const authenticateToken = async (req, res, next) => {
             attributes: { exclude: ['password'] }
         });
 
-        if (!user || !user.isActive) {
-            return res.status(401).json({ message: 'Invalid or inactive user' });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid user' });
+        }
+
+        // Block access if user is inactive
+        if (!user.isActive) {
+            return res.status(401).json({ message: 'Account is deactivated. Please contact administrator.' });
         }
 
         req.user = user;

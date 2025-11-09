@@ -26,8 +26,11 @@ describe('Authentication API', () => {
 
     afterAll(async () => {
         // Clean up test data
-        await User.destroy({ where: { email: 'testadmin@example.com' } });
-        await User.destroy({ where: { email: 'newuser@example.com' } });
+        await User.destroy({
+            where: {
+                email: ['testadmin@example.com', 'newuser@example.com', 'defaultrole@example.com']
+            }
+        });
     });
 
     describe('POST /api/auth/login', () => {
@@ -54,7 +57,7 @@ describe('Authentication API', () => {
                 });
 
             expect(response.status).toBe(401);
-            expect(response.body.message).toBe('Invalid credentials');
+            expect(response.body.message).toBe('Invalid email or password');
         });
 
         it('should reject missing email', async () => {
@@ -88,10 +91,9 @@ describe('Authentication API', () => {
     });
 
     describe('POST /api/auth/register', () => {
-        it('should create new user (Admin only)', async () => {
+        it('should create new user (public endpoint)', async () => {
             const response = await request(app)
                 .post('/api/auth/register')
-                .set('Authorization', `Bearer ${authToken}`)
                 .send({
                     name: 'New User',
                     email: 'newuser@example.com',
@@ -103,12 +105,25 @@ describe('Authentication API', () => {
             expect(response.body).toHaveProperty('user');
             expect(response.body).toHaveProperty('token');
             expect(response.body.user.email).toBe('newuser@example.com');
+            expect(response.body.user.role).toBe('Sales Executive');
+        });
+
+        it('should default to Sales Executive role if not provided', async () => {
+            const response = await request(app)
+                .post('/api/auth/register')
+                .send({
+                    name: 'Default Role User',
+                    email: 'defaultrole@example.com',
+                    password: 'password123'
+                });
+
+            expect(response.status).toBe(201);
+            expect(response.body.user.role).toBe('Sales Executive');
         });
 
         it('should reject duplicate email', async () => {
             const response = await request(app)
                 .post('/api/auth/register')
-                .set('Authorization', `Bearer ${authToken}`)
                 .send({
                     name: 'Duplicate User',
                     email: 'testadmin@example.com',
@@ -118,6 +133,30 @@ describe('Authentication API', () => {
 
             expect(response.status).toBe(400);
             expect(response.body.message).toContain('already exists');
+        });
+
+        it('should reject invalid email format', async () => {
+            const response = await request(app)
+                .post('/api/auth/register')
+                .send({
+                    name: 'Invalid Email',
+                    email: 'notanemail',
+                    password: 'password123'
+                });
+
+            expect(response.status).toBe(400);
+        });
+
+        it('should reject password less than 6 characters', async () => {
+            const response = await request(app)
+                .post('/api/auth/register')
+                .send({
+                    name: 'Short Password',
+                    email: 'shortpass@example.com',
+                    password: '12345'
+                });
+
+            expect(response.status).toBe(400);
         });
     });
 });

@@ -197,10 +197,7 @@ router.put('/:id',
                 return res.status(404).json({ message: 'Lead not found' });
             }
 
-            // Check access permission
-            if (req.user.role === 'Sales Executive' && lead.assignedToId !== req.user.id) {
-                return res.status(403).json({ message: 'Access denied' });
-            }
+            // Sales Executive can edit any lead (removed restriction)
 
             const oldStatus = lead.status;
             const oldAssignedTo = lead.assignedToId;
@@ -306,8 +303,8 @@ router.put('/:id',
     }
 );
 
-// Delete lead (Admin/Manager only)
-router.delete('/:id', authorizeRoles('Admin', 'Manager'), async (req, res) => {
+// Delete lead (Admin, Manager, and Sales Executive can delete)
+router.delete('/:id', async (req, res) => {
     try {
         const lead = await Lead.findByPk(req.params.id);
         if (!lead) {
