@@ -2,6 +2,11 @@ import { io } from 'socket.io-client'
 
 let socket = null
 
+// Get socket URL from environment variable, fallback to default
+const getSocketUrl = () => {
+    return import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000'
+}
+
 export const initializeSocket = (userId) => {
     if (!userId) return null
 
@@ -11,7 +16,7 @@ export const initializeSocket = (userId) => {
         socket = null
     }
 
-    socket = io('http://localhost:5000', {
+    socket = io(getSocketUrl(), {
         transports: ['websocket'],
         reconnection: true,
         reconnectionDelay: 1000,
