@@ -46,12 +46,15 @@ function ResetPassword() {
         try {
             await api.post('/auth/reset-password', {
                 token,
-                password
+                password,
             })
             toast.success('Password reset successfully! You can now sign in.')
             setTimeout(() => navigate('/login'), 2000)
         } catch (error) {
-            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to reset password'
+            const errorMessage =
+                error?.response?.data?.message ||
+                error?.message ||
+                'Failed to reset password'
             setError(errorMessage)
             toast.error(errorMessage)
             console.error('Reset password error:', error)
@@ -60,32 +63,38 @@ function ResetPassword() {
         }
     }
 
-    if (!token) {
-        return null
-    }
+    if (!token) return null
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-300 bg-gray-100 dark:bg-slate-900">
             <AnimatedBackground />
-            <div className="w-full max-w-md bg-white/90 backdrop-blur-lg shadow-2xl rounded-2xl px-8 py-10 z-10 border border-white/20 relative">
+            <div className="w-full max-w-md bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg shadow-2xl rounded-2xl px-8 py-10 z-10 border border-white/20 dark:border-slate-700 relative">
+                {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                         Reset Password
                     </h1>
-                    <p className="mt-2 text-gray-500 text-sm">
+                    <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">
                         Enter your new password below
                     </p>
                 </div>
 
+                {/* Form */}
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="rounded-lg bg-red-50 border-2 border-red-300 p-4">
-                            <p className="text-sm font-medium text-red-800">{error}</p>
+                        <div className="rounded-lg bg-red-100 dark:bg-red-900/40 border border-red-300 dark:border-red-700 p-4">
+                            <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                                {error}
+                            </p>
                         </div>
                     )}
 
+                    {/* New Password */}
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
                             New Password
                         </label>
                         <div className="mt-1 relative">
@@ -100,29 +109,47 @@ function ResetPassword() {
                                     setPassword(e.target.value)
                                     setError('')
                                 }}
-                                className="block w-full rounded-lg border border-gray-300 px-4 py-2 pr-10 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 sm:text-sm transition"
+                                className="block w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 pr-10 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm transition-all"
                                 placeholder="••••••••"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition"
                             >
                                 {showPassword ? (
-                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    // 👁 Visible Icon
+                                    <svg
+                                        className="h-5 w-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        viewBox="0 0 24 24"
+                                    >
                                         <path
-                                            fillRule="evenodd"
-                                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                            clipRule="evenodd"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                        />
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
                                         />
                                     </svg>
                                 ) : (
-                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                    // 👁 Hidden Icon
+                                    <svg
+                                        className="h-5 w-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        viewBox="0 0 24 24"
+                                    >
                                         <path
-                                            fillRule="evenodd"
-                                            d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.977 9.977 0 00-4.158.83l-1.135-1.135zM14.95 6.05a3 3 0 014.242 4.242L14.95 6.05zM12.586 8.414L8.414 12.586A2 2 0 0110 12a2 2 0 01-1.586-.586zM2 4.222l2.929 2.929A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 2.069 0 3.983-.64 5.613-1.736L17.778 16l-1.414-1.414L2.586 2.586 1.172 4l.828.828L2 4.222z"
-                                            clipRule="evenodd"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.02 7.192 19 12 19c1.943 0 3.773-.46 5.395-1.28M9.88 9.88A3 3 0 0114.12 14.12M3 3l18 18"
                                         />
                                     </svg>
                                 )}
@@ -130,8 +157,12 @@ function ResetPassword() {
                         </div>
                     </div>
 
+                    {/* Confirm Password */}
                     <div>
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="confirmPassword"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
                             Confirm Password
                         </label>
                         <input
@@ -145,21 +176,22 @@ function ResetPassword() {
                                 setConfirmPassword(e.target.value)
                                 setError('')
                             }}
-                            className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 sm:text-sm transition"
+                            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm transition"
                             placeholder="••••••••"
                         />
                     </div>
 
+                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-semibold rounded-lg text-white transition-all duration-300 ease-in-out ${loading
-                            ? 'bg-blue-400 cursor-not-allowed'
-                            : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
-                            } shadow-lg hover:shadow-xl`}
+                        className={`group relative w-full flex justify-center items-center py-2 px-4 text-sm font-semibold rounded-lg text-white shadow-lg transition-all duration-300 ease-in-out ${loading
+                                ? 'bg-blue-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 active:scale-95 hover:shadow-xl'
+                            }`}
                     >
                         {loading ? (
-                            <span className="flex items-center">
+                            <>
                                 <svg
                                     className="animate-spin h-5 w-5 mr-2 text-white"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -181,16 +213,17 @@ function ResetPassword() {
                                     ></path>
                                 </svg>
                                 Resetting...
-                            </span>
+                            </>
                         ) : (
                             'Reset Password'
                         )}
                     </button>
 
-                    <p className="text-center text-sm text-gray-600">
+                    {/* Back to login */}
+                    <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                         <Link
                             to="/login"
-                            className="font-medium text-blue-600 hover:text-blue-700 transition"
+                            className="font-medium text-blue-600 dark:text-blue-400 hover:underline transition"
                         >
                             Back to Sign in
                         </Link>
@@ -202,4 +235,3 @@ function ResetPassword() {
 }
 
 export default ResetPassword
-

@@ -21,8 +21,8 @@ function Login() {
         try {
             const result = await dispatch(login({ email, password })).unwrap()
             if (result && result.user) {
-                toast.success('Welcome back ')
-                setTimeout(() => navigate('/'), 300)
+                toast.success(`Welcome back, ${result.user.name || 'User'}!`)
+                setTimeout(() => navigate('/'), 500)
             }
         } catch (error) {
             let errorMessage = 'Login failed'
@@ -39,74 +39,82 @@ function Login() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-300 bg-gray-100 dark:bg-slate-900">
             <AnimatedBackground />
-            <div className="w-full max-w-md bg-white/90 backdrop-blur-lg shadow-2xl rounded-2xl px-8 py-10 z-10 border border-white/20 relative">
+
+            {/* Card */}
+            <div className="w-full max-w-md bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg shadow-2xl rounded-2xl px-8 py-10 z-10 border border-white/20 dark:border-slate-700 relative">
+                {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                         CRM Login
                     </h1>
-                    <p className="mt-2 text-gray-500 text-sm">
+                    <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm">
                         Sign in to manage your leads and activities
                     </p>
                 </div>
 
+                {/* Login Form */}
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-primary">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
                             Email Address
                         </label>
                         <input
                             id="email"
-                            name="email"
                             type="email"
                             autoComplete="email"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-primary shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-blue-50 dark:focus:ring-offset-slate-800 sm:text-sm transition"
+                            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200"
                             placeholder="you@example.com"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-primary">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
                             Password
                         </label>
                         <input
                             id="password"
-                            name="password"
                             type="password"
                             autoComplete="current-password"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-primary shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-blue-50 dark:focus:ring-offset-slate-800 sm:text-sm transition"
+                            className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200"
                             placeholder="••••••••"
                         />
                     </div>
 
+                    {/* Forgot password */}
                     <div className="flex items-center justify-between">
-                        <div className="text-sm">
-                            <Link
-                                to="/forgot-password"
-                                className="font-medium text-blue-600 hover:text-blue-700 transition"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
+                        <Link
+                            to="/forgot-password"
+                            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline transition"
+                        >
+                            Forgot password?
+                        </Link>
                     </div>
 
+                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-semibold rounded-lg text-white transition-all duration-300 ease-in-out ${loading
-                            ? 'bg-blue-400 cursor-not-allowed'
-                            : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
-                            } shadow-lg hover:shadow-xl`}
+                        className={`group relative w-full flex justify-center items-center py-2.5 px-4 text-sm font-semibold rounded-lg text-white transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl ${loading
+                                ? 'bg-blue-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
+                            }`}
                     >
                         {loading ? (
-                            <span className="flex items-center">
+                            <>
                                 <svg
                                     className="animate-spin h-5 w-5 mr-2 text-white"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -128,17 +136,18 @@ function Login() {
                                     ></path>
                                 </svg>
                                 Signing in...
-                            </span>
+                            </>
                         ) : (
                             'Sign in'
                         )}
                     </button>
 
-                    <p className="text-center text-sm text-gray-600">
+                    {/* Register Link */}
+                    <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                         Don’t have an account?{' '}
                         <Link
                             to="/register"
-                            className="font-medium text-blue-600 hover:text-blue-700 transition"
+                            className="font-medium text-blue-600 dark:text-blue-400 hover:underline transition"
                         >
                             Create one
                         </Link>
