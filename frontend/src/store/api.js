@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { store } from './store'
+import { clearAuth } from './slices/authSlice'
 
 // Get API base URL from environment variable
 // In development, Vite proxy handles /api
@@ -29,12 +31,12 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Clear user data from localStorage
-            localStorage.removeItem('user')
-            // Redirect to login
-            if (window.location.pathname !== '/login') {
-                window.location.href = '/login'
-            }
+            // Clear authentication state
+            store.dispatch(clearAuth())
+
+            // Don't redirect here - let React Router handle it via PrivateRoute
+            // Redirecting here causes full page reload and breaks SPA routing in production
+            // The PrivateRoute component will automatically redirect unauthenticated users
         }
         return Promise.reject(error)
     }
