@@ -5,7 +5,7 @@ let ioInstance = null;
 let emailServiceReady = false;
 let emailServiceError = null;
 
-// Create transporter
+// Create transporter with timeout settings
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT) || 587,
@@ -16,12 +16,24 @@ const transporter = nodemailer.createTransport({
     },
     tls: {
         rejectUnauthorized: process.env.NODE_ENV === 'production' // stricter in prod
-    }
+    },
+    connectionTimeout: 5000, // 5 seconds connection timeout
+    greetingTimeout: 5000, // 5 seconds greeting timeout
+    socketTimeout: 10000, // 10 seconds socket timeout
+    pool: false // Disable connection pooling to avoid hanging connections
 });
 
-// Verify transporter
+// Verify transporter with timeout (non-blocking)
 if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    // Use setTimeout to add timeout to verification
+    const verifyTimeout = setTimeout(() => {
+        console.warn('⚠️  Email service verification timeout - will attempt to send emails anyway');
+        emailServiceReady = false;
+        emailServiceError = 'Verification timeout';
+    }, 5000); // 5 second timeout
+
     transporter.verify((error, success) => {
+        clearTimeout(verifyTimeout);
         if (error) {
             console.error('❌ Email service configuration error:', error.message);
             emailServiceReady = false;
@@ -56,7 +68,14 @@ const sendEmailNotification = async ({ to, subject, text, html }) => {
             html: html || text
         };
 
-        const info = await transporter.sendMail(mailOptions);
+        // Add timeout to prevent hanging
+        const sendPromise = transporter.sendMail(mailOptions);
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Email send timeout after 15 seconds')), 15000);
+        });
+
+        const info = await Promise.race([sendPromise, timeoutPromise]);
+        
         if (process.env.NODE_ENV !== 'production') {
             console.log(`✅ Email sent successfully to ${to}: ${info.messageId}`);
         }
