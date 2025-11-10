@@ -107,7 +107,7 @@ router.post('/webhooks/test',
                 // Test Slack webhook
                 try {
                     await axios.post(webhookConfigs.slack.webhookUrl, {
-                        text: '🧪 Test notification from CRM System',
+                        text: ' Test notification from CRM System',
                         attachments: [{
                             color: 'good',
                             fields: [{ title: 'Status', value: 'Integration test successful', short: false }]

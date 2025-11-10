@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     // Use setTimeout to add timeout to verification
     const verifyTimeout = setTimeout(() => {
-        console.warn('⚠️  Email service verification timeout - will attempt to send emails anyway');
+        console.warn('  Email service verification timeout - will attempt to send emails anyway');
         emailServiceReady = false;
         emailServiceError = 'Verification timeout';
     }, 5000); // 5 second timeout
@@ -35,27 +35,27 @@ if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     transporter.verify((error, success) => {
         clearTimeout(verifyTimeout);
         if (error) {
-            console.error('❌ Email service configuration error:', error.message);
+            console.error('Email service configuration error:', error.message);
             emailServiceReady = false;
             emailServiceError = error.message;
         } else {
-            console.log('✅ Email service is ready to send messages');
+            console.log(' Email service is ready to send messages');
             console.log(`   Using: ${process.env.EMAIL_USER} via ${process.env.EMAIL_HOST || 'smtp.gmail.com'}`);
             emailServiceReady = true;
         }
     });
 } else {
-    console.warn('⚠️  Email service not configured. Set EMAIL_USER and EMAIL_PASS in .env file.');
+    console.warn('Email service not configured. Set EMAIL_USER and EMAIL_PASS in .env file.');
 }
 
 const sendEmailNotification = async ({ to, subject, text, html }) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.log(`📧 Email skipped: not configured (${subject} to ${to})`);
+        console.log(` Email skipped: not configured (${subject} to ${to})`);
         return { skipped: true, reason: 'Email service not configured' };
     }
 
     if (!to || !subject) {
-        console.warn('⚠️ Missing recipient or subject');
+        console.warn(' Missing recipient or subject');
         return { success: false, error: 'Invalid parameters' };
     }
 
@@ -77,11 +77,11 @@ const sendEmailNotification = async ({ to, subject, text, html }) => {
         const info = await Promise.race([sendPromise, timeoutPromise]);
 
         if (process.env.NODE_ENV !== 'production') {
-            console.log(`✅ Email sent successfully to ${to}: ${info.messageId}`);
+            console.log(` Email sent successfully to ${to}: ${info.messageId}`);
         }
         return { success: true, messageId: info.messageId, info };
     } catch (error) {
-        console.error(`❌ Error sending email to ${to}: ${error.message}`);
+        console.error(` Error sending email to ${to}: ${error.message}`);
         return { success: false, error: error.message, details: error };
     }
 };
