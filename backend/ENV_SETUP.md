@@ -25,9 +25,9 @@ JWT_EXPIRE=7d
 
 # Email Configuration (for notifications)
 EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=kumar9772sandeep@gmail.com
-EMAIL_PASS=aqka nhhf qwtd bwua
+EMAIL_PORT= exampl 123
+EMAIL_USER=email id 
+EMAIL_PASS= 16 digit password 
 
 # Frontend URL (for CORS)
 FRONTEND_URL=http://localhost:3000
