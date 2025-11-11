@@ -69,6 +69,14 @@ A modern, scalable CRM platform built with the MERN stack (MongoDB/PostgreSQL, E
 
 ## 📦 Installation & Setup
 
+## git clone   https://github.com/sandeepMasai/CRM-System-Challenge.git
+## npm i node package
+## both frontend and backend
+## cd backend  and  frontend
+## Backend Live URL https://test-full-cmc-system.onrender.com 
+## Frontend  Live URL https://test-full-cmc-system-1.onrender.com/login
+
+
 ### Prerequisites
 - Node.js (v18 or higher)
 - PostgreSQL (v15 or higher)
