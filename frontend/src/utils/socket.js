@@ -1,50 +1,52 @@
-import { io } from 'socket.io-client'
+import { io } from 'socket.io-client';
 
-let socket = null
+let socket = null;
 
-// Get socket URL from environment variable, fallback to default
-const getSocketUrl = () => {
-    return import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000'
-}
+// Dynamically choose the Socket.IO server URL
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 export const initializeSocket = (userId) => {
-    if (!userId) return null
+  if (!userId) return null;
 
-    // Disconnect existing socket if any
-    if (socket) {
-        socket.disconnect()
-        socket = null
-    }
+  // Disconnect any existing socket
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
 
-    socket = io(getSocketUrl(), {
-        transports: ['websocket'],
-        reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionAttempts: 5
-    })
+  // Initialize a new Socket.IO connection
+  socket = io(SOCKET_URL, {
+    transports: ['websocket'],
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 5,
+    withCredentials: true, // ✅ send cookies (important for auth if needed)
+  });
 
-    socket.on('connect', () => {
-        console.log('Socket connected')
-        socket.emit('join', userId)
-    })
+  socket.on('connect', () => {
+    console.log('✅ Socket connected:', socket.id);
+    socket.emit('join', `user_${userId}`);
+  });
 
-    socket.on('disconnect', () => {
-        console.log('Socket disconnected')
-    })
+  socket.on('disconnect', (reason) => {
+    console.log('⚠️ Socket disconnected:', reason);
+  });
 
-    socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error)
-    })
+  socket.on('connect_error', (error) => {
+    console.error('❌ Socket connection error:', error.message);
+  });
 
-    return socket
-}
+  return socket;
+};
 
-export const getSocket = () => socket
+// Get the existing socket instance
+export const getSocket = () => socket;
 
+// Disconnect socket manually (e.g. on logout)
 export const disconnectSocket = () => {
-    if (socket) {
-        socket.disconnect()
-        socket = null
-    }
-}
-
+  if (socket) {
+    socket.disconnect();
+    console.log('🧹 Socket manually disconnected');
+    socket = null;
+  }
+};

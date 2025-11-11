@@ -115,23 +115,6 @@
     .border-card {
         @apply border-gray-200 dark:border-slate-700;
     }
-
-    /* Input styles - ensure visible text in dark mode */
-    input,
-    textarea,
-    select {
-        @apply text-gray-900 dark:text-gray-100;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-        @apply text-gray-400 dark:text-gray-400;
-    }
-
-    /* Ensure select options are visible */
-    select option {
-        @apply bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100;
-    }
 }
 
 body {

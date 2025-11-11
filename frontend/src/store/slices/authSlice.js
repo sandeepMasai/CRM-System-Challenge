@@ -6,8 +6,31 @@ export const login = createAsyncThunk(
     async (credentials, { rejectWithValue }) => {
         try {
             const response = await api.post('/auth/login', credentials)
-            // Token is now stored in httpOnly cookie, only store user data
-            localStorage.setItem('user', JSON.stringify(response.data.user))
+            console.log('📦 Login response:', response.data)
+            
+            // Store token and user data in localStorage
+            if (response.data && response.data.token) {
+                localStorage.setItem('token', response.data.token)
+                // Verify token was stored
+                const storedToken = localStorage.getItem('token')
+                if (storedToken === response.data.token) {
+                    console.log('✅ Token stored and verified in localStorage:', response.data.token.substring(0, 20) + '...')
+                } else {
+                    console.error('❌ Token storage failed - token mismatch')
+                    return rejectWithValue('Failed to store token')
+                }
+            } else {
+                console.error('❌ No token in login response:', response.data)
+                return rejectWithValue('No token received from server')
+            }
+            
+            if (response.data && response.data.user) {
+                localStorage.setItem('user', JSON.stringify(response.data.user))
+                console.log('✅ User stored in localStorage')
+            } else {
+                console.error('❌ No user in login response:', response.data)
+            }
+            
             return response.data
         } catch (error) {
             let errorMessage = 'Login failed'
@@ -36,7 +59,10 @@ export const register = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         try {
             const response = await api.post('/auth/register', userData)
-            // Token is now stored in httpOnly cookie, only store user data
+            // Store token and user data in localStorage
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token)
+            }
             localStorage.setItem('user', JSON.stringify(response.data.user))
             return response.data
         } catch (error) {
@@ -77,10 +103,12 @@ export const logout = createAsyncThunk(
         try {
             await api.post('/auth/logout')
             localStorage.removeItem('user')
+            localStorage.removeItem('token')
             return null
         } catch (error) {
             // Even if logout fails, clear local storage
             localStorage.removeItem('user')
+            localStorage.removeItem('token')
             return rejectWithValue(error.response?.data?.message || 'Failed to logout')
         }
     }
@@ -108,11 +136,6 @@ const authSlice = createSlice({
     reducers: {
         clearError: (state) => {
             state.error = null
-        },
-        clearAuth: (state) => {
-            state.user = null
-            state.isAuthenticated = false
-            localStorage.removeItem('user')
         }
     },
     extraReducers: (builder) => {
@@ -138,6 +161,7 @@ const authSlice = createSlice({
                 state.isAuthenticated = false
                 state.user = null
                 localStorage.removeItem('user')
+                localStorage.removeItem('token')
             })
             .addCase(register.pending, (state) => {
                 state.loading = true
@@ -164,7 +188,7 @@ const authSlice = createSlice({
     }
 })
 
-export const { clearError, clearAuth } = authSlice.actions
+export const { clearError } = authSlice.actions
 export const selectAuth = (state) => state.auth
 export default authSlice.reducer
 

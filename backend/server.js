@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
@@ -25,8 +24,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://crm-system-challenge.onrender.com',
+  'https://test-full-cmc-system-1.onrender.com',
   'https://crm-system-challenge-1.onrender.com',
- 
+  'https://test-full-cmc-system-1.onrender.com',
 ];
 
 // Socket.io setup
@@ -34,7 +34,7 @@ const io = socketIo(server, {
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
-    credentials: true,
+    // No credentials needed - using token-based auth
   },
 });
 
@@ -48,18 +48,29 @@ app.use(
         callback(new Error(`CORS policy: Origin ${origin} not allowed.`));
       }
     },
-    credentials: true,
+    credentials: false, // Explicitly disable credentials - using token-based auth with localStorage
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
-app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 initializeSocket(io);
 
-// API Routes
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Server is running' });
+});
+
+// Test route to verify API routing works
+app.post('/api/test', (req, res) => {
+  res.json({ status: 'ok', message: 'API routing is working', body: req.body });
+});
+
+// API Routes - must be before static file serving
 app.use('/api/auth', authRoutes);
 app.use('/api/leads', authenticateToken, leadRoutes);
 app.use('/api/activities', authenticateToken, activityRoutes);
@@ -67,13 +78,18 @@ app.use('/api/dashboard', authenticateToken, dashboardRoutes);
 app.use('/api/notifications', authenticateToken, notificationRoutes);
 app.use('/api/integrations', integrationRoutes);
 
-// ✅ Serve React frontend correctly in production
+//  Serve React frontend correctly in production
+
 if (process.env.NODE_ENV === 'production') {
   const __dirname = path.resolve();
   app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
-  // Catch-all route for React Router (very important)
+  // Catch-all route for React Router - only for GET requests
   app.get('*', (req, res) => {
+    // Skip API routes
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({ message: 'API route not found' });
+    }
     res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
   });
 }
@@ -94,7 +110,7 @@ if (process.env.NODE_ENV !== 'test') {
   sequelize
     .authenticate()
     .then(() => {
-      console.log(' Database connection established.');
+      console.log('Database connection established.');
       return sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
     })
     .then(() => {

@@ -1,42 +1,53 @@
 import axios from 'axios'
-import { store } from './store'
-import { clearAuth } from './slices/authSlice'
-
-// Get API base URL from environment variable
-// In development, Vite proxy handles /api
-// In production, use full backend URL from env
-const getApiBaseURL = () => {
-    const apiBasePath = import.meta.env.VITE_API_BASE_PATH || '/api'
-    const apiUrl = import.meta.env.VITE_API_URL
-
-    // If VITE_API_URL is set and we're in production, use it
-    if (apiUrl && import.meta.env.PROD) {
-        return `${apiUrl}${apiBasePath}`
-    }
-
-    // Otherwise use relative path (for Vite proxy in dev)
-    return apiBasePath
-}
 
 const api = axios.create({
-    baseURL: getApiBaseURL(),
+     baseURL: import.meta.env.VITE_BASE_URL,
     headers: {
         'Content-Type': 'application/json'
     },
-    withCredentials: true // Send cookies with requests
+    withCredentials: false 
 })
+
+// Add token to requests from localStorage
+api.interceptors.request.use(
+    (config) => {
+        // Skip adding token for auth endpoints
+        const isAuthEndpoint = config.url && (
+            config.url.includes('/auth/login') || 
+            config.url.includes('/auth/register') || 
+            config.url.includes('/auth/forgot-password') || 
+            config.url.includes('/auth/reset-password')
+        )
+        
+        if (!isAuthEndpoint) {
+            const token = localStorage.getItem('token')
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`
+                console.log(' Token added to request:', config.url)
+            } else {
+                console.error(' No token found in localStorage for request:', config.url)
+                // Don't block the request, let the server handle it
+            }
+        }
+        return config
+    },
+    (error) => {
+        return Promise.reject(error)
+    }
+)
 
 // Handle token expiration
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Clear authentication state
-            store.dispatch(clearAuth())
-
-            // Don't redirect here - let React Router handle it via PrivateRoute
-            // Redirecting here causes full page reload and breaks SPA routing in production
-            // The PrivateRoute component will automatically redirect unauthenticated users
+            // Clear user data and token from localStorage
+            localStorage.removeItem('user')
+            localStorage.removeItem('token')
+            // Redirect to login
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login'
+            }
         }
         return Promise.reject(error)
     }

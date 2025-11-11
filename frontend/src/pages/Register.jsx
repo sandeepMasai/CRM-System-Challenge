@@ -30,7 +30,7 @@ function Register() {
         e.preventDefault()
 
         if (formData.password !== formData.confirmPassword) {
-            toast.error('Passwords do not match ❌')
+            toast.error('Passwords do not match ')
             return
         }
 
@@ -44,8 +44,8 @@ function Register() {
             const result = await dispatch(register(registerData)).unwrap()
 
             if (result && result.user) {
-                toast.success('Registration successful 🎉')
-                setTimeout(() => navigate('/'), 500)
+                toast.success('Registration successful ')
+                setTimeout(() => navigate('/login'), 500)
             }
         } catch (error) {
             let errorMessage = 'Registration failed'
@@ -134,7 +134,7 @@ function Register() {
                         >
                             <option value="Sales Executive">Sales Executive</option>
                             <option value="Manager">Manager</option>
-                            <option value="Admin">Admin</option>
+                            {/* <option value="Admin">Admin</option> */}
                         </select>
                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             Admin and Manager roles may require approval.
